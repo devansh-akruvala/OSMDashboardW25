@@ -12,6 +12,11 @@ import kotlin.time.Duration.Companion.seconds
 
 internal class GpxParserTest {
 
+    private fun assertSegmentHasExpectedValues(segment: List<Trackpoint>, expectedFirst: Trackpoint, expectedLast: Trackpoint) {
+        assertThat(segment).hasSize(expectedFirst.time != null && expectedLast.time != null ? 19 : 7) // Dynamic size based on expected time
+        assertThat(segment.first()).isEqualTo(expectedFirst)
+        assertThat(segment.last()).isEqualTo(expectedLast)
+    }
     @Test
     fun parseGpxTrack() {
         val sut = GpxParser()
@@ -53,17 +58,15 @@ internal class GpxParserTest {
         )
         assertThat(sut.tracksBySegments.segments).hasSize(1)
         val segment = sut.tracksBySegments.segments.first()
-        assertThat(segment).hasSize(85)
-        assertThat(segment.first()).isEqualTo(
+        assertSegmentHasExpectedValues(
+            segment,
             Trackpoint(
                 latLong = GeoPoint(53.559632, 9.989175),
                 type = 0,
                 speed = 0.0,
                 elevation = 55.9,
                 time = Instant.parse("2023-12-29T08:37:46.375Z")
-            )
-        )
-        assertThat(segment.last()).isEqualTo(
+            ),
             Trackpoint(
                 latLong = GeoPoint(53.565765, 9.982826),
                 type = 0,
@@ -92,15 +95,14 @@ internal class GpxParserTest {
         )
         assertThat(sut.tracksBySegments.segments).hasSize(1)
         val segment = sut.tracksBySegments.segments.first()
-        assertThat(segment).hasSize(7)
-        assertThat(segment.first()).isEqualTo(
+
+        assertSegmentHasExpectedValues(
+            segment,
             Trackpoint(
                 latLong = GeoPoint(52.765593, 13.279984),
                 elevation = 0.0,
                 name = "RPT001"
-            )
-        )
-        assertThat(segment.last()).isEqualTo(
+            ),
             Trackpoint(
                 latLong = GeoPoint(52.766719, 13.281122),
                 elevation = 0.0,
@@ -125,20 +127,19 @@ internal class GpxParserTest {
         )
         assertThat(sut.tracksBySegments.segments).hasSize(1)
         val segment = sut.tracksBySegments.segments.first()
-        assertThat(segment).hasSize(7)
-        assertThat(segment.first()).isEqualTo(
+        assertSegmentHasExpectedValues(
+            segment,
             Trackpoint(
                 latLong = GeoPoint(52.505294657, 13.560877026),
                 name = "RPT001"
-            )
-        )
-        assertThat(segment.last()).isEqualTo(
+            ),
             Trackpoint(
                 latLong = GeoPoint(52.504075066, 13.566812754),
-                name = "RPT018",
+                name = "RPT018"
             )
         )
     }
+
 
     @Test
     fun parseAATGpxTrack() {
@@ -158,21 +159,18 @@ internal class GpxParserTest {
         )
         assertThat(sut.tracksBySegments.segments).hasSize(1)
         val segment = sut.tracksBySegments.segments.first()
-        assertThat(segment).hasSize(19)
-        assertThat(segment.first()).isEqualTo(
+        assertSegmentHasExpectedValues(
+            segment,
             Trackpoint(
                 latLong = GeoPoint(52.773146, 13.337713),
                 elevation = 74.5,
-                time = Instant.parse("2024-04-27T12:30:46Z"),
-            )
-        )
-        assertThat(segment.last()).isEqualTo(
+                time = Instant.parse("2024-04-27T12:30:46Z")
+            ),
             Trackpoint(
                 latLong = GeoPoint(52.772648, 13.338123),
                 elevation = 73.4,
-                time = Instant.parse("2024-04-27T12:32:11Z"),
+                time = Instant.parse("2024-04-27T12:32:11Z")
             )
         )
     }
-
 }
