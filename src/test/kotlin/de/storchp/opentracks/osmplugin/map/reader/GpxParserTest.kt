@@ -12,6 +12,18 @@ import kotlin.time.Duration.Companion.seconds
 
 internal class GpxParserTest {
 
+    private fun assertSegmentHasExpectedValues(
+        sut: GpxParser,
+        expectedSize: Int,
+        firstPoint: GeoPoint,
+        lastPoint: GeoPoint
+    ) {
+        assertThat(sut.tracksBySegments.segments).hasSize(1)
+        val segment = sut.tracksBySegments.segments.first()
+        assertThat(segment).hasSize(expectedSize)
+        assertThat(segment.first()).isEqualTo(Trackpoint(latLong = firstPoint))
+        assertThat(segment.last()).isEqualTo(Trackpoint(latLong = lastPoint))
+    }
     @Test
     fun parseGpxTrack() {
         val sut = GpxParser()
@@ -90,22 +102,11 @@ internal class GpxParserTest {
                 maxElevationMeter = 0.0,
             )
         )
-        assertThat(sut.tracksBySegments.segments).hasSize(1)
-        val segment = sut.tracksBySegments.segments.first()
-        assertThat(segment).hasSize(7)
-        assertThat(segment.first()).isEqualTo(
-            Trackpoint(
-                latLong = GeoPoint(52.765593, 13.279984),
-                elevation = 0.0,
-                name = "RPT001"
-            )
-        )
-        assertThat(segment.last()).isEqualTo(
-            Trackpoint(
-                latLong = GeoPoint(52.766719, 13.281122),
-                elevation = 0.0,
-                name = "RPT007"
-            )
+        assertSegmentHasExpectedValues(
+            sut,
+            expectedSize = 7,
+            firstPoint = GeoPoint(52.765593, 13.279984),
+            lastPoint = GeoPoint(52.766719, 13.281122)
         )
     }
 
@@ -123,22 +124,14 @@ internal class GpxParserTest {
                 totalDistanceMeter = 468.38468683124336,
             )
         )
-        assertThat(sut.tracksBySegments.segments).hasSize(1)
-        val segment = sut.tracksBySegments.segments.first()
-        assertThat(segment).hasSize(7)
-        assertThat(segment.first()).isEqualTo(
-            Trackpoint(
-                latLong = GeoPoint(52.505294657, 13.560877026),
-                name = "RPT001"
-            )
-        )
-        assertThat(segment.last()).isEqualTo(
-            Trackpoint(
-                latLong = GeoPoint(52.504075066, 13.566812754),
-                name = "RPT018",
-            )
+        assertSegmentHasExpectedValues(
+            sut,
+            expectedSize = 7,
+            firstPoint = GeoPoint(52.505294657, 13.560877026),
+            lastPoint = GeoPoint(52.504075066, 13.566812754)
         )
     }
+
 
     @Test
     fun parseAATGpxTrack() {
