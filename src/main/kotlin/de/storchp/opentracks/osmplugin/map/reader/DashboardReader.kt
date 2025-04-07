@@ -159,7 +159,9 @@ class DashboardReader(
 
 
     private fun readTracks(data: Uri) {
-        readTracks(TrackReader.readTracks(contentResolver, data))
+        // Optional: use a fixed or validated category filter to avoid injection concerns
+        val safeCategory = "running" // You could dynamically get this if needed
+        readTracks(TrackReader.readTracks(contentResolver, data, categoryFilter = safeCategory))
     }
 
     override fun startContentObserver() {
